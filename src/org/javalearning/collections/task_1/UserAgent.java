@@ -1,15 +1,13 @@
-package org.javalearning;
+package org.javalearning.collections.task_1;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class UserAgent {
-    // Поля класса UserAgent
     private final String osType;
     private final String browser;
 
-    // Конструктор для разбора строки User-Agent и установки значений свойств
     public UserAgent(String userAgentString) {
         if (userAgentString.equals("-")) {
             this.osType = "-";
@@ -55,7 +53,6 @@ public class UserAgent {
             e.printStackTrace();
         }
     }
-    // Геттеры для свойств
     public String getOsType() {
         return osType;
     }

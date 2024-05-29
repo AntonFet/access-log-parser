@@ -1,4 +1,4 @@
-package org.collections.course.project.task_3;
+package org.javalearning.collections.task_2;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,14 +12,14 @@ public class Statistics {
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
     private HashSet<String> pages;
-    private static HashMap<String, Integer> osStats;
+    private static HashMap<String, Integer> browserStats;
 
     public Statistics() {
         totalTraffic = 0;
         minTime = null;
         maxTime = null;
         pages = new HashSet<>();
-        osStats = new HashMap<>();
+        browserStats = new HashMap<>();
     }
 
     public void addEntry(LogEntry entry) {
@@ -29,13 +29,13 @@ public class Statistics {
 
         totalTraffic += entry.getResponseSize();
 
-        if (entry.getResponseCode() == 200) {
+        if (entry.getResponseCode() == 404) {
             pages.add(entry.getPath());
         }
 
-        String os = extractOSFromUserAgent(entry.getOperatingSystem());
-        if (os != null) {
-            osStats.put(os, osStats.getOrDefault(os, 0) + 1);
+        String browser = extractBrowserFromUserAgent(entry.getOperatingSystem());
+        if (browser != null) {
+            browserStats.put(browser, browserStats.getOrDefault(browser, 0) + 1);
         }
 
         if (minTime == null || entry.getTime().isBefore(minTime)) {
@@ -64,19 +64,19 @@ public class Statistics {
         return pages;
     }
 
-    public HashMap<String, Double> getOSStatistics() {
-        HashMap<String, Double> osPercentage = new HashMap<>();
-        int totalOSCount = osStats.values().stream().mapToInt(Integer::intValue).sum();
+    public HashMap<String, Double> getBrowserStatistics() {
+        HashMap<String, Double> browserPercentage = new HashMap<>();
+        int totalBrowserCount = browserStats.values().stream().mapToInt(Integer::intValue).sum();
 
-        for (Map.Entry<String, Integer> entry : osStats.entrySet()) {
-            double percentage = (double) entry.getValue() / totalOSCount;
-            osPercentage.put(entry.getKey(), percentage);
+        for (Map.Entry<String, Integer> entry : browserStats.entrySet()) {
+            double percentage = (double) entry.getValue() / totalBrowserCount;
+            browserPercentage.put(entry.getKey(), percentage);
         }
 
-        return osPercentage;
+        return browserPercentage;
     }
 
-    private String extractOSFromUserAgent(String userAgent) {
+    private String extractBrowserFromUserAgent(String userAgent) {
         String[] parts = userAgent.split("\\s+");
         return parts.length > 0 ? parts[0] : null;
     }
@@ -109,7 +109,7 @@ public class Statistics {
                 String userAgentStr = userAgentBuilder.toString().trim();
                 String userAgent = userAgentStr.equals("\"-\"") ? "-" : userAgentStr;
 
-                String operatingSystem = LogEntry.parseOperatingSystem(userAgentStr);
+                String operatingSystem = LogEntry.parseBrowserSystem(userAgentStr);
 
                 LogEntry entry = new LogEntry(ipAddr,time,method,path,responseCode,responseSize,referer,userAgent,operatingSystem);
                 entries.add(entry);
@@ -127,16 +127,14 @@ public class Statistics {
             stats.addEntry(entry);
         }
 
-        System.out.printf("\nСредний объем трафика в час (MB): %.2f\n", stats.getTrafficRate());
-
         HashSet<String> allPages = stats.getAllPages();
-        System.out.println("\nСписок всех существующих страниц сайта:\n");
+        System.out.println("\nСписок всех не существующих страниц сайта: \n");
         for (String page : allPages) {
             System.out.println(page);
         }
 
-        System.out.println("\nСтатистика операционных систем пользователей сайта:\n");
-        for (Map.Entry<String, Double> entry : stats.getOSStatistics().entrySet()) {
+        System.out.println("\nСтатистика браузеров пользователей сайта: \n");
+        for (Map.Entry<String, Double> entry : stats.getBrowserStatistics().entrySet()) {
             System.out.printf("%s: %.2f%%\n", entry.getKey(), entry.getValue() * 100);
         }
 

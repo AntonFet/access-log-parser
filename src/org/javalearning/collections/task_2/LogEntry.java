@@ -1,4 +1,4 @@
-package org.collections.course.project.task_3;
+package org.javalearning.collections.task_2;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,11 +7,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+// Enum для типов HTTP-запросов
 enum HttpMethod {
     GET, POST, PUT, DELETE
 }
 
+// Класс org.test.LogEntry для представления строки лога
 public class LogEntry {
+    // Поля класса org.test.LogEntry
     private final String ipAddr;
     private final LocalDateTime time;
     private final HttpMethod method;
@@ -22,6 +25,7 @@ public class LogEntry {
     private final String userAgent;
     private final String operatingSystem;
 
+    // Конструктор для разбора строки и установки значений свойств
     public LogEntry(String logLine) {
         // Пример разбора строки logLine и установки значений:
         String[] parts = logLine.split(" ");
@@ -64,8 +68,8 @@ public class LogEntry {
         this.userAgent = userAgentStr.equals("\"-\"") ? "-" : userAgentStr;
         System.out.println("User Agent: " + userAgent);
 
-        this.operatingSystem = parseOperatingSystem(userAgentStr);
-        System.out.println("Operating System: " + operatingSystem);
+        this.operatingSystem = parseBrowserSystem(userAgentStr);
+        System.out.println("Browser: " + operatingSystem);
     }
 
     public LogEntry(String ipAddr, LocalDateTime time, HttpMethod method, String path, int responseCode, int responseSize, String referer, String userAgent, String operatingSystem) {
@@ -91,14 +95,17 @@ public class LogEntry {
         }
     }
 
-    static String parseOperatingSystem(String userAgent) {
-        if (userAgent.contains("Windows")) {
-            return "Windows";
-        } else if (userAgent.contains("Mac OS")) {
-            return "Mac OS";
-        } else if (userAgent.contains("Linux")) {
-            return "Linux";
-        } else {
+    static String parseBrowserSystem(String userAgent) {
+        if (userAgent.contains("Edge")) {
+            return "Edge";
+        } else if (userAgent.contains("Firefox")) {
+            return "Firefox";
+        } else if (userAgent.contains("Chrome")) {
+            return "Chrome";
+        }   else if (userAgent.contains("Opera")) {
+            return "Opera";
+        }
+        else {
             return "Other";
         }
     }

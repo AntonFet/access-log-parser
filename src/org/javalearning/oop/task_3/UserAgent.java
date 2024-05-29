@@ -1,21 +1,19 @@
-package org.collections.course.project.task_2_1;
+package org.javalearning.oop.task_3;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class UserAgent {
-    // Поля класса UserAgent
     private final String osType;
     private final String browser;
 
-    // Конструктор для разбора строки User-Agent и установки значений свойств
     public UserAgent(String userAgentString) {
         if (userAgentString.equals("-")) {
             this.osType = "-";
             this.browser = "-";
         } else {
-            // Извлечение типа операционной системы
+
             if (userAgentString.contains("Windows")) {
                 this.osType = "Windows";
             } else if (userAgentString.contains("Mac OS")) {
@@ -27,7 +25,6 @@ public class UserAgent {
             }
             System.out.println("OS: " + osType);
 
-            // Извлечение браузера
             if (userAgentString.contains("Edge")) {
                 this.browser = "Edge";
             } else if (userAgentString.contains("Firefox")) {
@@ -55,7 +52,7 @@ public class UserAgent {
             e.printStackTrace();
         }
     }
-    // Геттеры для свойств
+
     public String getOsType() {
         return osType;
     }

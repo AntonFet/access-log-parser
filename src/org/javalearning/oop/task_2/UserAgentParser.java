@@ -1,4 +1,4 @@
-package org.test;
+package org.javalearning.oop.task_2;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

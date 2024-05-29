@@ -1,19 +1,17 @@
-package org.javalearning;
+package org.javalearning.collections.task_1;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-// Enum для типов HTTP-запросов
 enum HttpMethod {
     GET, POST, PUT, DELETE
 }
 
-// Класс org.test.LogEntry для представления строки лога
 public class LogEntry {
-    // Поля класса org.test.LogEntry
     private final String ipAddr;
     private final LocalDateTime time;
     private final HttpMethod method;
@@ -22,8 +20,8 @@ public class LogEntry {
     private final int responseSize;
     private final String referer;
     private final String userAgent;
+    private final String operatingSystem;
 
-    // Конструктор для разбора строки и установки значений свойств
     public LogEntry(String logLine) {
         // Пример разбора строки logLine и установки значений:
         String[] parts = logLine.split(" ");
@@ -34,7 +32,7 @@ public class LogEntry {
 
         // Парсинг даты и времени
         String dateTimeStr = parts[3].substring(1) + " " + parts[4].substring(0, 5);
-        this.time = LocalDateTime.parse(dateTimeStr, java.time.format.DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH));
+        this.time = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH));
         System.out.println("Time: " + time);
 
         // Парсинг метода запроса
@@ -65,9 +63,12 @@ public class LogEntry {
         String userAgentStr = userAgentBuilder.toString().trim();
         this.userAgent = userAgentStr.equals("\"-\"") ? "-" : userAgentStr;
         System.out.println("User Agent: " + userAgent);
+
+        this.operatingSystem = parseOperatingSystem(userAgentStr);
+        System.out.println("Operating System: " + operatingSystem);
     }
 
-    public LogEntry(String ipAddr, LocalDateTime time, HttpMethod method, String path, int responseCode, int responseSize, String referer, String userAgent) {
+    public LogEntry(String ipAddr, LocalDateTime time, HttpMethod method, String path, int responseCode, int responseSize, String referer, String userAgent, String operatingSystem) {
         this.ipAddr = ipAddr;
         this.time = time;
         this.method = method;
@@ -76,6 +77,7 @@ public class LogEntry {
         this.responseSize = responseSize;
         this.referer = referer;
         this.userAgent = userAgent;
+        this.operatingSystem = operatingSystem;
     }
 
     public static void parseLogFile(String filename) {
@@ -89,7 +91,18 @@ public class LogEntry {
         }
     }
 
-    // Геттеры для свойств
+    static String parseOperatingSystem(String userAgent) {
+        if (userAgent.contains("Windows")) {
+            return "Windows";
+        } else if (userAgent.contains("Mac OS")) {
+            return "Mac OS";
+        } else if (userAgent.contains("Linux")) {
+            return "Linux";
+        } else {
+            return "Other";
+        }
+    }
+
     public String getIpAddr() {
         return ipAddr;
     }
@@ -121,6 +134,11 @@ public class LogEntry {
     public String getUserAgent() {
         return userAgent;
     }
+
+    public String getOperatingSystem() {
+        return operatingSystem;
+    }
+
     public static void main(String[] args) {
         parseLogFile("src/access.log");
     }

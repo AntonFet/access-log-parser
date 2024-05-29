@@ -1,25 +1,23 @@
-package org.collections.course.project.task_2_1;
+package org.javalearning.oop.task_3;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class Statistics {
     private long totalTraffic;
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
-    private HashSet<String> pages;
-    private static HashMap<String, Integer> browserStats;
 
     public Statistics() {
         totalTraffic = 0;
         minTime = null;
         maxTime = null;
-        pages = new HashSet<>();
-        browserStats = new HashMap<>();
     }
 
     public void addEntry(LogEntry entry) {
@@ -28,15 +26,6 @@ public class Statistics {
         }
 
         totalTraffic += entry.getResponseSize();
-
-        if (entry.getResponseCode() == 404) {
-            pages.add(entry.getPath());
-        }
-
-        String browser = extractBrowserFromUserAgent(entry.getOperatingSystem());
-        if (browser != null) {
-            browserStats.put(browser, browserStats.getOrDefault(browser, 0) + 1);
-        }
 
         if (minTime == null || entry.getTime().isBefore(minTime)) {
             minTime = entry.getTime();
@@ -60,27 +49,6 @@ public class Statistics {
         return (double) trafficInMegabytes / hours;
     }
 
-    public HashSet<String> getAllPages() {
-        return pages;
-    }
-
-    public HashMap<String, Double> getBrowserStatistics() {
-        HashMap<String, Double> browserPercentage = new HashMap<>();
-        int totalBrowserCount = browserStats.values().stream().mapToInt(Integer::intValue).sum();
-
-        for (Map.Entry<String, Integer> entry : browserStats.entrySet()) {
-            double percentage = (double) entry.getValue() / totalBrowserCount;
-            browserPercentage.put(entry.getKey(), percentage);
-        }
-
-        return browserPercentage;
-    }
-
-    private String extractBrowserFromUserAgent(String userAgent) {
-        String[] parts = userAgent.split("\\s+");
-        return parts.length > 0 ? parts[0] : null;
-    }
-
     public static List<LogEntry> parseLogFile(String filename) {
         List<LogEntry> entries = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -94,7 +62,7 @@ public class Statistics {
                 String[] parts = line.split(" ");
                 String ipAddr = parts[0];
                 String dateTimeStr = parts[3].substring(1) + " " + parts[4].substring(0, 5);
-                LocalDateTime time = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH));
+                LocalDateTime time = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH)); // Предполагается, что формат времени корректный
 
                 HttpMethod method = HttpMethod.valueOf(parts[5].substring(1));
                 String path = parts[6];
@@ -108,10 +76,7 @@ public class Statistics {
                 }
                 String userAgentStr = userAgentBuilder.toString().trim();
                 String userAgent = userAgentStr.equals("\"-\"") ? "-" : userAgentStr;
-
-                String operatingSystem = LogEntry.parseBrowserSystem(userAgentStr);
-
-                LogEntry entry = new LogEntry(ipAddr,time,method,path,responseCode,responseSize,referer,userAgent,operatingSystem);
+                LogEntry entry = new LogEntry(ipAddr,time,method,path,responseCode,responseSize,referer,userAgent);
                 entries.add(entry);
             }
         } catch (IOException e) {
@@ -126,17 +91,6 @@ public class Statistics {
         for (LogEntry entry : entries) {
             stats.addEntry(entry);
         }
-
-        HashSet<String> allPages = stats.getAllPages();
-        System.out.println("\nСписок всех не существующих страниц сайта: \n");
-        for (String page : allPages) {
-            System.out.println(page);
-        }
-
-        System.out.println("\nСтатистика браузеров пользователей сайта: \n");
-        for (Map.Entry<String, Double> entry : stats.getBrowserStatistics().entrySet()) {
-            System.out.printf("%s: %.2f%%\n", entry.getKey(), entry.getValue() * 100);
-        }
-
+        System.out.printf("\nСредний объем трафика в час (MB): %.2f\n", stats.getTrafficRate());
     }
 }
