@@ -11,7 +11,6 @@ import static org.javalearning.stream.api.task_2.UserAgent.parseBrowserSystem;
 import static org.javalearning.stream.api.task_2.UserAgent.parseOsSystem;
 import static org.javalearning.stream.api.task_2.UserAgent.isBot;
 
-
 public class Statistics {
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
